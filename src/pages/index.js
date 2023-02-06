@@ -1,7 +1,32 @@
 import Head from "next/head";
 import Image from "next/image";
+import Script from "next/script";
+import { useEffect } from "react";
+async function initPlayer() {
+  const manifestUri = "/h264.mpd";
+  // Create a Player instance.
+  const video = document.getElementById("video");
+  const player = new shaka.Player(video);
 
+  // Attach player to the window to make it easy to access in the JS console.
+  window.player = player;
+
+  // Try to load a manifest.
+  // This is an asynchronous process.
+  try {
+    await player.load(manifestUri);
+    // This runs if the asynchronous load is successful.
+    console.log("The video has now been loaded!");
+  } catch (e) {
+    // onError is executed if the asynchronous load fails
+  }
+}
 export default function Home() {
+  useEffect(() => {
+    setTimeout(() => {
+      initPlayer();
+    }, 3000);
+  });
   return (
     <>
       <Head>
@@ -11,8 +36,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <video controls width={600} height={400} src="/video.mp4"></video>
+        <video id="video" width="640" controls autoPlay></video>
       </main>
+      <Script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.4/shaka-player.compiled.js"></Script>
     </>
   );
 }
